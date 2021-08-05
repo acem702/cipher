@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+
+<style type="text/css">
+* {
+ box-sizing:border-box;
+
+}
+.otp {
+  display:flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 100px auto 10px;
+  max-width:360px;
+}
+.otp .otpBox {
+  display:inline-block;
+  width: calc(100% / 5);
+  margin: 8px;
+  height:60px;
+  padding: 8px;
+  border-radius:6px;
+  border:6px solid #ddd;
+  outline:none;
+  font-size: 25px;
+  font-weight:bold;
+  text-align:center;
+  text-transform: uppercase;
+}
+
+
+</style>
+</head>
+<body>
+   
+   <div class="otp" >
+      <input class="otpBox" id="box1"  minlength="t"    />
+   
+       <input class="otpBox"  id="box2"  />
+        <input class="otpBox"  id="box3"   />
+         <input class="otpBox"  id="box4"   />
+          <input class="otpBox"  id="box5"    />
+   </div>
+   
+   <button>Show</button>
+<!---   
+   <script src="otp.js"> -->
+   </script>
+   
+   <script>
+       
+       var otps = document.querySelectorAll(".otpBox")
+  
+   for(const inputs of otps) {
+      
+      inputs.addEventListener("input", input)
+      inputs.addEventListener("paste" , paste)
+   }
+   document.addEventListener("keyup", deleteOtp)
+   
+   function deleteOtp(e) {
+     var keypress = e.keyCode;
+     const  keys = [8, /* Add more keycodes here */]
+     if( keys.includes( keypress ) ) {
+       var target = e.target,
+           prev = target.previousElementSibling;
+       if( target.value == "" ) {
+         prev.value = ""
+         prev.focus()
+       }else {
+         target.focus()
+       }
+     }
+   }
+   
+   
+   function paste(e) {
+     
+     var  otp = e.clipboardData.getData("text/plain").trim()
+      
+     if(otp.length == otps.length) {
+       for( var i in otp ) {
+         otps[i].value = otp[i]
+       }
+     }
+      e.preventDefault()
+   }
+   
+   function input(e) {
+     var next = this.nextElementSibling;
+     
+     var lastOtp = [].filter.call(otps,function(e) {
+          return (
+               e.value == "" &&
+               [].indexOf.call(otps, e) < [].indexOf.call(otps,this)
+               )
+     }.bind(this))
+     
+     if(lastOtp.length > 0) {
+       lastOtp[0].value = this.value
+       this.value = ""
+       lastOtp[0].nextElementSibling.focus()
+     }else if ( this.value.length > 1 ) {
+        var f = this.value.slice(0, 1),
+            l = this.value.slice(1,2)
+        this.value = f
+        if((next && next.value == "")
+            && this.value !== ""
+           ) {
+          next.focus()
+          next.value = l
+        }
+     } 
+   
+   }
+  
+   function getOTPValue(callback = null) {
+       var otp = "" 
+       for(var o of otps){
+          otp += o.value 
+       } 
+       if( callback ) callback( otp , otps);
+       else return otp;
+   }
+   
+   
+          
+   </script>
+   
+   
+   <script type="text/javascript">
+   
+   var show = document.querySelector("button")
+   show.onclick = function() {
+       getOTPValue(function (otp, otps) {
+          
+          var pass = "CODE1";
+          if((otp == "") || ( pass != otp ) ) {
+            alert("invalid otp")
+            
+          }else {
+            alert("success")
+          }
+       })
+   }
+   </script>
+</body>
+</html>
